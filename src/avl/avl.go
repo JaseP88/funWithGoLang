@@ -10,11 +10,11 @@ import (
 
 // Node ...
 type Node struct {
-	key, value  int
-	left, right *Node
+	key, height  int
+	parent, left, right *Node
 }
 
-func (node *Node) insert(key, value int) {
+func (node *Node) insert(key int) {
 	if node == nil {
 		return
 	}
@@ -25,17 +25,21 @@ func (node *Node) insert(key, value int) {
 
 	case key < node.key:
 		if node.left == nil {
-			node.left = &Node{key: key, value: value}
+			node.left = &Node{key: key, parent: node, height: 0}
+			node.height = 1
+			node.parent.resetParentHeight(node.height)
 			return
 		}
-		node.left.insert(key, value)
+		node.left.insert(key)
 
 	case key > node.key:
 		if node.right == nil {
-			node.right = &Node{key: key, value: value}
+			node.right = &Node{key: key, parent: node, height: 0}
+			node.height = 1
+			node.parent.resetParentHeight(node.height)
 			return
 		}
-		node.right.insert(key, value)
+		node.right.insert(key)
 	}
 }
 
@@ -44,17 +48,28 @@ func (node *Node)inOrder() {
 		return
 	}
 	node.left.inOrder()
-	fmt.Println(node.key)
+	fmt.Print(node.key)
+	fmt.Print(": ")
+	fmt.Println(node.height)
 	node.right.inOrder()
 }
 
-func main() {
-	tree := &Node{key: 22, value: 1}
-	tree.insert(7, 2)
-	tree.insert(12, 3)
-	tree.insert(17, 4)
-	tree.insert(1, 5)
-	tree.insert(3, 6)
+func (node *Node) resetParentHeight(h int) {
+	if node != nil {
+		if h+1 > node.height {
+			node.height = h+1
+			node.parent.resetParentHeight(node.height)
+		}
+	}
+}
 
+func main() {
+	tree := &Node{key: 17}
+	tree.insert(12)
+	tree.insert(22)
+	tree.insert(1)
+	tree.insert(7)
+	tree.insert(3)
+	
 	tree.inOrder()
 }
