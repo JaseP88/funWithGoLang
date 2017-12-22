@@ -10,7 +10,7 @@ import (
 
 // Node ...
 type Node struct {
-	key, height  int
+	key, height         int
 	parent, left, right *Node
 }
 
@@ -25,25 +25,31 @@ func (node *Node) insert(key int) {
 
 	case key < node.key:
 		if node.left == nil {
-			node.left = &Node{key: key, parent: node, height: 0}
-			node.height = 1
+			node.left = &Node{key: key, parent: node}
+			if node.height < 1 {
+				node.height = 1
+			}
 			node.parent.resetParentHeight(node.height)
+			node.balance()
 			return
 		}
 		node.left.insert(key)
 
 	case key > node.key:
 		if node.right == nil {
-			node.right = &Node{key: key, parent: node, height: 0}
-			node.height = 1
+			node.right = &Node{key: key, parent: node}
+			if node.height < 1 {
+				node.height = 1
+			}
 			node.parent.resetParentHeight(node.height)
+			node.balance()
 			return
 		}
 		node.right.insert(key)
 	}
 }
 
-func (node *Node)inOrder() {
+func (node *Node) inOrder() {
 	if node == nil {
 		return
 	}
@@ -57,10 +63,50 @@ func (node *Node)inOrder() {
 func (node *Node) resetParentHeight(h int) {
 	if node != nil {
 		if h+1 > node.height {
-			node.height = h+1
+			node.height = h + 1
 			node.parent.resetParentHeight(node.height)
 		}
 	}
+}
+
+func (node *Node) balance() {
+	if node == nil {
+		fmt.Println("DEAD")
+		fmt.Println()
+	}
+	if node != nil {
+		leftHeight, rightHeight := node.getSubTreeHeight()
+		balance := leftHeight - rightHeight
+
+		if balance > 1 || balance < -1 {
+			//balance
+			fmt.Print(node.key)
+			fmt.Print(": ")
+			fmt.Println(balance)
+		} else {
+			fmt.Print(node.key)
+			fmt.Print(": ")
+			fmt.Println(balance)
+			fmt.Println("going UP")
+			node.parent.balance()
+		}
+	}
+}
+
+func (node *Node) getSubTreeHeight() (int, int) {
+	var leftHeight, rightHeight int
+
+	if node.left == nil {
+		leftHeight = -1
+	} else {
+		leftHeight = node.left.height
+	}
+	if node.right == nil {
+		rightHeight = -1
+	} else {
+		rightHeight = node.right.height
+	}
+	return leftHeight, rightHeight
 }
 
 func main() {
@@ -70,6 +116,7 @@ func main() {
 	tree.insert(1)
 	tree.insert(7)
 	tree.insert(3)
-	
-	tree.inOrder()
+
+	// fmt.Println("HAHHAHAHAHAH")
+	// tree.inOrder()
 }
