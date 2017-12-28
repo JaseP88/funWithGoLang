@@ -66,38 +66,58 @@ func (node *Node) balance() {
 		if balance > 1 || balance < -1 {
 			// do rotations
 			// node.leftRotate()
-			node.rotateLeft()
+			node.rightLeftRotate()
 		} else {
 			node.parent.balance()
 		}
 	}
 }
 
-func (node *Node) rotateLeft() {
-	pivot := *node
-	temp := *node.right
+func (node *Node) leftRotate() {
+	temp := *node
+	pivot := *node.right
 
-	if pivot.parent == nil {
-		temp.parent = nil
-		pivot.parent = &temp
+	if temp.parent == nil {
+		pivot.parent = nil
+		temp.parent = &pivot
 	} else {
-		temp.parent = pivot.parent
-		pivot.parent = &temp
+		pivot.parent = temp.parent
+		temp.parent = &pivot
 	}
 
-	if temp.left == nil {
-		pivot.right = nil
-		temp.left = &pivot
+	if pivot.left == nil {
+		temp.right = nil
+		pivot.left = &temp
 	} else {
-		temp2 := *temp.left
-		pivot.right = &temp2
-		temp.left = &pivot
+		temp2 := *pivot.left
+		temp.right = &temp2
+		pivot.left = &temp
 	}
 
-	pivot.height = temp.right.height
-	temp.height = temp.right.height + 1
+	temp.height = pivot.right.height
+	pivot.height = pivot.right.height + 1
 
-	*node =  temp
+	*node =  pivot
+}
+
+func (node *Node) rightLeftRotate() {
+	pivot := *node.right
+	temp := *pivot.left
+
+	if temp.right == nil {
+		pivot.left = nil
+	} else {
+		temp2 := *temp.right
+		pivot.left = &temp2
+	}
+
+	temp.parent = node
+	temp.right = &pivot
+
+	pivot.parent = &temp
+
+	node.right = &temp
+	node.leftRotate()
 }
 
 func (node *Node) getSubTreeHeight() (int, int) {
@@ -146,22 +166,23 @@ func (node *Node) preOrder() {
 }
 
 func main() {
-	tree := &Node{key: 39}
-	tree.insert(32)
-	tree.insert(45)
-	tree.insert(12)
-	tree.insert(33)
-	tree.insert(42)
-	tree.insert(60)
-	tree.insert(40)
+	tree := &Node{key: 50}
 	tree.insert(44)
-	tree.insert(50)
 	tree.insert(70)
-	tree.insert(77)
+	tree.insert(30)
+	tree.insert(47)
+	tree.insert(60)
+	tree.insert(80)
+	tree.insert(55)
+	tree.insert(65)
+	tree.insert(75)
+	tree.insert(90)
+	tree.insert(66)
 
-	// tree.preOrder()
+
+	tree.preOrder()
 	// tree.postOrder()
-	tree.inOrder()
+	// tree.inOrder()
 	// fmt.Println(tree)
 
 	// fmt.Print(tree.left)
@@ -181,4 +202,13 @@ left rotation
 39-32-45-12-33-49-52
 
 39-32-45-12-33-42-60-40-44-50-70-77
+*/
+
+/*
+right left rotation
+4-8-6
+
+50-44-70-30-47-60-80-55-75-90-53 --> x look at node 60
+
+50-44-70-30-47-60-80-55-65-75-90-66
 */
