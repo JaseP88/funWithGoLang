@@ -49,17 +49,6 @@ func (node *Node) insert(key int) {
 	}
 }
 
-func (node *Node) inOrder() {
-	if node == nil {
-		return
-	}
-	node.left.inOrder()
-	fmt.Print(node.key)
-	fmt.Print(": ")
-	fmt.Println(node.height)
-	node.right.inOrder()
-}
-
 func (node *Node) resetParentHeight(h int) {
 	if node != nil {
 		if h+1 > node.height {
@@ -70,27 +59,42 @@ func (node *Node) resetParentHeight(h int) {
 }
 
 func (node *Node) balance() {
-	if node == nil {
-		fmt.Println("DEAD")
-		fmt.Println()
-	}
 	if node != nil {
 		leftHeight, rightHeight := node.getSubTreeHeight()
 		balance := leftHeight - rightHeight
 
 		if balance > 1 || balance < -1 {
-			//balance
-			fmt.Print(node.key)
-			fmt.Print(": ")
-			fmt.Println(balance)
+			// do rotations
+			// node.leftRotate()
+			node.rotateLeft()
 		} else {
-			fmt.Print(node.key)
-			fmt.Print(": ")
-			fmt.Println(balance)
-			fmt.Println("going UP")
 			node.parent.balance()
 		}
 	}
+}
+
+func (node *Node) rotateLeft() {
+	pivot := *node
+	temp := *node.right
+
+	if pivot.parent == nil {
+		temp.parent = nil
+		pivot.parent = &temp
+	} else {
+		temp.parent = pivot.parent
+		pivot.parent = &temp
+	}
+
+	if temp.left == nil {
+		pivot.right = nil
+		temp.left = &pivot
+	} else {
+		temp2 := *temp.left
+		*pivot.right = temp2
+		*temp.left = pivot
+	}
+
+	*node =  temp
 }
 
 func (node *Node) getSubTreeHeight() (int, int) {
@@ -109,14 +113,66 @@ func (node *Node) getSubTreeHeight() (int, int) {
 	return leftHeight, rightHeight
 }
 
-func main() {
-	tree := &Node{key: 17}
-	tree.insert(12)
-	tree.insert(22)
-	tree.insert(1)
-	tree.insert(7)
-	tree.insert(3)
-
-	// fmt.Println("HAHHAHAHAHAH")
-	// tree.inOrder()
+func (node *Node) inOrder() {
+	if node == nil {
+		return
+	}
+	node.left.inOrder()
+	fmt.Print(node.key)
+	fmt.Print(": ")
+	fmt.Println(node.height)
+	node.right.inOrder()
 }
+
+func (node *Node) postOrder() {
+	if node == nil {
+		return
+	}
+	node.left.postOrder()
+	node.right.postOrder()
+	fmt.Println(node.key)
+}
+
+func (node *Node) preOrder() {
+	if node == nil {
+		return
+	}
+	fmt.Println(node.key)
+	node.left.preOrder()
+	node.right.preOrder()
+}
+
+func main() {
+	tree := &Node{key: 39}
+	tree.insert(32)
+	tree.insert(45)
+	tree.insert(12)
+	tree.insert(33)
+	tree.insert(49)
+	tree.insert(52)
+
+	// tree.preOrder()
+	tree.postOrder()
+	// tree.inOrder()
+	// fmt.Println(tree)
+
+	// fmt.Print(tree.left)
+	// fmt.Print(" ")
+	// fmt.Println()
+	// fmt.Println(tree.left.parent)
+
+	// fmt.Print(tree.right)
+	// fmt.Print(" ")
+	// fmt.Println(tree.right.parent)
+}
+
+/*
+left rotation
+1-2-3
+
+39-32-45-12-33-49-52
+
+39-32-45-12-25-42-60-40-44-50-70-77
+
+
+*/
