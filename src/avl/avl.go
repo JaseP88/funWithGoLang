@@ -90,9 +90,12 @@ func (node *Node) rotateLeft() {
 		temp.left = &pivot
 	} else {
 		temp2 := *temp.left
-		*pivot.right = temp2
-		*temp.left = pivot
+		pivot.right = &temp2
+		temp.left = &pivot
 	}
+
+	pivot.height = temp.right.height
+	temp.height = temp.right.height + 1
 
 	*node =  temp
 }
@@ -148,12 +151,17 @@ func main() {
 	tree.insert(45)
 	tree.insert(12)
 	tree.insert(33)
-	tree.insert(49)
-	tree.insert(52)
+	tree.insert(42)
+	tree.insert(60)
+	tree.insert(40)
+	tree.insert(44)
+	tree.insert(50)
+	tree.insert(70)
+	tree.insert(77)
 
 	// tree.preOrder()
-	tree.postOrder()
-	// tree.inOrder()
+	// tree.postOrder()
+	tree.inOrder()
 	// fmt.Println(tree)
 
 	// fmt.Print(tree.left)
@@ -172,7 +180,5 @@ left rotation
 
 39-32-45-12-33-49-52
 
-39-32-45-12-25-42-60-40-44-50-70-77
-
-
+39-32-45-12-33-42-60-40-44-50-70-77
 */
