@@ -116,6 +116,9 @@ func (node *Node) rightLeftRotate() {
 
 	pivot.parent = &temp
 
+	temp.height = pivot.height
+	pivot.height = temp.height - 1
+
 	node.right = &temp
 	node.leftRotate()
 }
@@ -180,9 +183,9 @@ func main() {
 	tree.insert(66)
 
 
-	tree.preOrder()
+	// tree.preOrder()
 	// tree.postOrder()
-	// tree.inOrder()
+	tree.inOrder()
 	// fmt.Println(tree)
 
 	// fmt.Print(tree.left)
