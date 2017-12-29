@@ -89,8 +89,8 @@ func (node *Node) leftRotate() {
 		temp.right = nil
 		pivot.left = &temp
 	} else {
-		temp2 := *pivot.left
-		temp.right = &temp2
+		pivotLeft := *pivot.left
+		temp.right = &pivotLeft
 		pivot.left = &temp
 	}
 
@@ -100,6 +100,33 @@ func (node *Node) leftRotate() {
 	*node =  pivot
 }
 
+func (node *Node) rightRotate() {
+	temp := *node
+	pivot := *node.left
+
+	if temp.parent == nil {
+		pivot.parent = nil
+		temp.parent = &pivot
+	} else {
+		pivot.parent = temp.parent
+		temp.parent = &pivot
+	}
+
+	if pivot.right == nil {
+		temp.left = nil
+		pivot.right = &temp
+	} else {
+		pivotRight := *pivot.right
+		temp.left = &pivotRight
+		pivot.right = &temp
+	}
+
+	temp.height = pivot.left.height
+	pivot.height = pivot.left.height + 1
+
+	*node = pivot
+}
+
 func (node *Node) rightLeftRotate() {
 	pivot := *node.right
 	temp := *pivot.left
@@ -107,8 +134,8 @@ func (node *Node) rightLeftRotate() {
 	if temp.right == nil {
 		pivot.left = nil
 	} else {
-		temp2 := *temp.right
-		pivot.left = &temp2
+		tempRight := *temp.right
+		pivot.left = &tempRight
 	}
 
 	temp.parent = node
@@ -121,6 +148,29 @@ func (node *Node) rightLeftRotate() {
 
 	node.right = &temp
 	node.leftRotate()
+}
+
+func (node *Node) leftRightRotate() {
+	pivot :=  *node.left
+	temp := *pivot.right
+
+	if temp.left == nil {
+		pivot.right = nil
+	} else {
+		tempLeft := *temp.left
+		pivot.right = &tempLeft
+	}
+
+	temp.parent = node
+	temp.left = &pivot
+
+	pivot.parent = &temp
+
+	temp.height = pivot.height
+	pivot.height = temp.height - 1
+
+	node.left = &temp
+	node.leftRightRotate()
 }
 
 func (node *Node) getSubTreeHeight() (int, int) {
@@ -186,16 +236,6 @@ func main() {
 	// tree.preOrder()
 	// tree.postOrder()
 	tree.inOrder()
-	// fmt.Println(tree)
-
-	// fmt.Print(tree.left)
-	// fmt.Print(" ")
-	// fmt.Println()
-	// fmt.Println(tree.left.parent)
-
-	// fmt.Print(tree.right)
-	// fmt.Print(" ")
-	// fmt.Println(tree.right.parent)
 }
 
 /*
